@@ -252,7 +252,10 @@ Sets your default model type. Common values:
 
 | Model type | Description |
 |------------|-------------|
-| `MODEL_TYPE_DEEP_SYNTH_LITE` | Latest default model (PipSqueak 2) |
+| Model type | Description |
+|------------|-------------|
+| `MODEL_TYPE_DEEP_SYNTH` | DeepSqueak — premium roleplay model (c.ai+ paid tier) |
+| `MODEL_TYPE_DEEP_SYNTH_LITE` | PipSqueak 2 — default free-tier model |
 | `MODEL_TYPE_SMART` | Smart/thoughtful responses |
 | `MODEL_TYPE_BALANCED` | Balanced responses |
 | `MODEL_TYPE_FAST` | Fast responses |

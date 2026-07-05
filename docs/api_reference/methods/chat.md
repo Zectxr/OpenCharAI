@@ -210,7 +210,7 @@ Creates a new chat with a character.
 
 | Kwarg | Type | Description |
 |-------|------|-------------|
-| `model_type` | `str` | Model to use (e.g. `"MODEL_TYPE_DEEP_SYNTH_LITE"`) |
+| `model_type` | `str` | Model to use (e.g. `"MODEL_TYPE_DEEP_SYNTH_LITE"`, `"MODEL_TYPE_DEEP_SYNTH"`) |
 | `output_style` | `str` | Chat style (`"creative"`, `"balanced"`, `"precise"`, `"default"`) |
 
 ```python

@@ -17,7 +17,7 @@ Represents a chat v2 session.
 | `visibility` | `str` | `"public"`, `"unlisted"`, or `"private"` |
 | `preview_turns` | `List[Turn]` | Preview of recent messages |
 | `chat_name` | `Optional[str]` | Custom chat name |
-| `preferred_model_type` | `Optional[str]` | Model used for this chat (e.g. `"MODEL_TYPE_DEEP_SYNTH_LITE"`) |
+| `preferred_model_type` | `Optional[str]` | Model used for this chat (e.g. `"MODEL_TYPE_DEEP_SYNTH"`, `"MODEL_TYPE_DEEP_SYNTH_LITE"`) |
 | `model_preference_version` | `Optional[str]` | Version of the model preference |
 | `character_name` | `Optional[str]` | Character name (only in `fetch_recent_chats()`) |
 | `character_avatar` | `Optional[Avatar]` | Character avatar (only in `fetch_recent_chats()`) |

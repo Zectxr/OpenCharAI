@@ -16,10 +16,10 @@
 
 **What's new in OpenCharAI:**
 
-- ✅ **Model preferences** — set your default model (`MODEL_TYPE_DEEP_SYNTH_LITE`, `MODEL_TYPE_SMART`, etc.)
+- ✅ **Model preferences** — set your default model (`MODEL_TYPE_DEEP_SYNTH`, `MODEL_TYPE_DEEP_SYNTH_LITE`, `MODEL_TYPE_SMART`, etc.)
 - ✅ **Output styles** — pick a chat style (`creative`, `balanced`, `precise`, `default`)
 - ✅ **Per-chat output style** — pass `output_style` to `create_chat()` for granular control
-- ✅ **`MODEL_TYPE_DEEP_SYNTH_LITE`** — support for Character AI's latest model
+- ✅ **`MODEL_TYPE_DEEP_SYNTH` / `MODEL_TYPE_DEEP_SYNTH_LITE`** — support for DeepSqueak (premium) and PipSqueak 2 (free) models
 - ✅ **`preferred_model_type` & `model_preference_version`** exposed on `Chat`
 - ✅ **Bug fixes** — `generate_image()` and `upload_voice()` updated for API changes
 - ✅ **curl-cffi** bumped to `>=0.15.0`
