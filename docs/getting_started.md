@@ -47,22 +47,47 @@ This library uses two tokens:
 - **`token`** — required for most API methods
 - **`web_next_auth`** — only needed for `upload_avatar()`
 
-### Main token
+### Quick method (recommended)
+
+The fastest way is to copy both tokens at once from the browser console:
+
+1. Go to [Character AI](https://character.ai) and **log in**
+2. Open developer tools (`F12` / `Ctrl+Shift+I` / `Cmd+J`)
+3. Go to the **Console** tab
+4. Paste this and press Enter:
+
+```javascript
+copy({
+  token: JSON.parse(localStorage.getItem('char_token')).accessToken,
+  web_next_auth: document.cookie.match(/web-next-auth=([^;]+)/)?.[1] || ''
+})
+```
+
+Your clipboard will contain both tokens. The first value is your main `token`.
+
+### Alternative: Network tab
+
+If the console method doesn't work:
 
 1. Open [Character AI](https://character.ai) in your browser
 2. Open developer tools (`F12` / `Ctrl+Shift+I` / `Cmd+J`)
 3. Go to the **Network** tab
 4. Interact with the site (visit your profile, send a message, etc.)
-5. Find a request header named `Authorization` and copy the value after `Token`
+5. Click any request, find the `Authorization` header, and copy the value after `Token`
 
 ![token location](../assets/token.png)
 
-### `web_next_auth` token
+### Getting `web_next_auth` token only
 
 1. Open [Character AI](https://character.ai) in your browser
 2. Open developer tools (`F12` / `Ctrl+Shift+I` / `Cmd+J`)
-3. Go to **Storage → Cookies**
-4. Find the `web-next-auth` key and copy its value
+3. Go to the **Console** tab
+4. Paste and press Enter:
+```javascript
+copy(document.cookie.match(/web-next-auth=([^;]+)/)?.[1] || '')
+```
+
+Or find it in **Storage → Cookies** → look for `web-next-auth`.
 
 ![web_next_auth location](../assets/web_next_auth.png)
 
