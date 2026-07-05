@@ -2,262 +2,182 @@
 
 ---
 
-
 ### `fetch_characters_by_category`
-```Python
-async def fetch_characters_by_category() -> Dict[str, List[CharacterShort]]:
+
+```python
+async def fetch_characters_by_category() -> Dict[str, List[CharacterShort]]
 ```
 
-**Description**:\
-*fetches characters by categories.*
+Returns characters grouped by category.
 
-*Returns dict, where key is category and value is list of characters related to this category.*
-
-**Example**:
-```Python
-characters = await client.character.fetch_characters_by_category()
-
-for category in characters:
-    print(f"\n{category}: ")
-
-    for character in characters[category]:
-        print(f"{character.name} [{character.character_id}]")
+```python
+chars = await client.character.fetch_characters_by_category()
+for category, characters in chars.items():
+    print(f"{category}: {len(characters)} characters")
 ```
 
-
-**Returns** `Dict[str, List[`[CharacterShort](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#CharacterShort-class)`]]`
+**Returns:** `Dict[str, List[CharacterShort]]`
 
 ---
 
 ### `fetch_recommended_characters`
-```Python
-async def fetch_recommended_characters() -> List[CharacterShort]:
+
+```python
+async def fetch_recommended_characters() -> List[CharacterShort]
 ```
 
-**Description**:\
-*fetches recommended characters.*
-
-
-**Returns** `List[`[CharacterShort](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#CharacterShort-class)`]`
+**Returns:** `List[CharacterShort]`
 
 ---
 
 ### `fetch_featured_characters`
-```Python
-async def fetch_featured_characters() -> List[CharacterShort]:
+
+```python
+async def fetch_featured_characters() -> List[CharacterShort]
 ```
 
-**Description**:\
-*fetches featured characters.*
-
-
-**Returns** `List[`[CharacterShort](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#CharacterShort-class)`]`
+**Returns:** `List[CharacterShort]`
 
 ---
 
 ### `fetch_similar_characters`
-```Python
-async def fetch_similar_characters(character_id: str) -> List[CharacterShort]:
+
+```python
+async def fetch_similar_characters(character_id: str) -> List[CharacterShort]
 ```
 
-**Description**:\
-*fetches similar characters.*
+| Param | Type | Description |
+|-------|------|-------------|
+| `character_id` | `str` | ID of the character |
 
-
-**Params**:
-- character_id: `str` - *id of the character.*
-
-
-**Returns** `List[`[CharacterShort](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#CharacterShort-class)`]`
+**Returns:** `List[CharacterShort]`
 
 ---
 
 ### `fetch_character_info`
-```Python
-async def fetch_character_info(character_id: str) -> Character:
+
+```python
+async def fetch_character_info(character_id: str) -> Character
 ```
 
-**Description**:\
-*fetches information about character.*
+Fetches full information about a character, including definition, image settings, and voice configuration.
 
+| Param | Type | Description |
+|-------|------|-------------|
+| `character_id` | `str` | ID of the character |
 
-**Params**:
-- character_id: `str` - *id of the character.*
-
-
-**Returns** [Character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#Character-class)
+**Returns:** [`Character`](../types/character.md#character-class)
 
 ---
 
 ### `search_characters`
-```Python
-async def search_characters(character_name: str) -> List[CharacterShort]:
+
+```python
+async def search_characters(character_name: str) -> List[CharacterShort]
 ```
 
-**Description**:\
-*searches for characters.*
+Searches for characters by name.
 
-
-**Params**:
-- character_name: `str` - *name of the character.*
-
-**Example**:
-```Python
-name = "Catgirl"  # Why not.
-characters = await client.character.search_characters(name)  
-
-print(f"Search results for {name}:")
-
-for character in characters:
-    print(f"Name: {character.name}. Id: {character.character_id}")
+```python
+results = await client.character.search_characters("assistant")
+for c in results:
+    print(f"{c.name} — {c.character_id}")
 ```
 
-**Returns** `List[`[CharacterShort](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#CharacterShort-class)`]`
+**Returns:** `List[CharacterShort]`
 
 ---
 
 ### `search_creators`
-```Python
-async def search_creators(creator_name: str) -> List[str]:
+
+```python
+async def search_creators(creator_name: str) -> List[str]
 ```
 
-**Description**:\
-*searches for creators.*
+Searches for creators by name. Returns a list of matching usernames.
 
-*Returns list of creator usernames.*
-
-
-**Params**:
-- creator_name: `str` - *name of the creator.*
-
-
-**Returns** `List[str]`
+**Returns:** `List[str]`
 
 ---
 
 ### `character_vote`
-```Python
-async def character_vote(character_id: str, vote: Union[bool, None]) -> bool:
+
+```python
+async def character_vote(character_id: str, vote: Optional[bool]) -> bool
 ```
 
-**Description**:\
-*votes for character (likes or dislikes).*
+| Param | Type | Description |
+|-------|------|-------------|
+| `character_id` | `str` | ID of the character |
+| `vote` | `Optional[bool]` | `True` = like, `False` = dislike, `None` = remove vote |
 
-
-**Params**:
-- character_id: `str` - *id of the character you're trying to vote for.*
-- vote: `bool` or `None` - ***your vote** (pass `True` to like, `False` to dislike, and `None` to remove the vote).*
-
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `create_character`
-```Python
-async def create_character(name: str, greeting: str, title: str = "", description: str = "",
-                           definition: str = "", copyable: bool = False, visibility: str = "PRIVATE",
-                           avatar_rel_path: str = "", default_voice_id: str = "") -> Character:
+
+```python
+async def create_character(
+    name: str,
+    greeting: str,
+    title: str = "",
+    description: str = "",
+    definition: str = "",
+    copyable: bool = False,
+    visibility: str = "private",
+    avatar_rel_path: str = "",
+    default_voice_id: str = "",
+) -> Character
 ```
 
-**Description**:\
-*creates new character.*
+| Param | Type | Constraints |
+|-------|------|-------------|
+| `name` | `str` | 3–20 characters |
+| `greeting` | `str` | 3–4096 characters |
+| `title` | `str` | 3–50 characters |
+| `description` | `str` | ≤500 characters |
+| `definition` | `str` | ≤32000 characters |
+| `copyable` | `bool` | Whether definition is visible to others |
+| `visibility` | `str` | `"public"`, `"unlisted"`, or `"private"` |
+| `avatar_rel_path` | `str` | Filename on CAI server |
+| `default_voice_id` | `str` | Default voice for the character |
 
-
-**Params**:
-- name: `str` - ***character name** (must be at least 3 characters and no more than 20).*
-
-
-- greeting: `str` - ***character greeting** (must be at least 3 characters and no more than 2048).*
-
-
-- title: `str` (optional) - ***character title** (must be at least 3 characters and no more than 50).*   
-
-
-- description: `str` (optional) - ***character description** (must be no more than 500 characters).*  
-
-
-- definition: `str` (optional) - ***character definition** (must be no more than 32000 characters).*   
-
-
-- copyable: `bool` (optional, default: `False`) - ***whether the character can be copied. In other words, whether its definition is visible.***
-
-
-- visibility: `str` (optional, default: `"private"`) - ***character visibility** (`public`, `unlisted` or `private`).*   
-
-
-- avatar_rel_path: `str` (optional) - ***avatar filename on c.ai server.*** 
-
-
-- default_voice_id: `str` (optional) - ***id of the voice that will be the default character voice.***
-
-
-**Returns** [Character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#Character-class)
+**Returns:** [`Character`](../types/character.md#character-class)
 
 ---
 
 ### `edit_character`
-```Python
-async def edit_character(character_id: str, name: str, greeting: str, title: str = "", description: str = "",
-                         definition: str = "", copyable: bool = False, visibility: str = "private",
-                         avatar_rel_path: str = "", default_voice_id: str = "") -> Character
+
+```python
+async def edit_character(
+    character_id: str,
+    name: str,
+    greeting: str,
+    title: str = "",
+    description: str = "",
+    definition: str = "",
+    copyable: bool = False,
+    visibility: str = "private",
+    avatar_rel_path: str = "",
+    default_voice_id: str = "",
+) -> Character
 ```
 
-**Description**:\
-*edits your character.*
+Same parameters as `create_character`, plus `character_id` to specify which character to edit.
 
-
-**Params**:
-- character_id: `str` - ***id of the character you're trying to edit.***
-
-
-- name: `str` - ***character name** (must be at least 3 characters and no more than 20).*
-
-
-- greeting: `str` - ***character greeting** (must be at least 3 characters and no more than 2048).*
-
-
-- title: `str` (optional) - ***character title** (must be at least 3 characters and no more than 50).*   
-
-
-- description: `str` (optional) - ***character description** (must be no more than 500 characters).*  
-
-
-- definition: `str` (optional) - ***character definition** (must be no more than 32000 characters).*   
-
-
-- copyable: `bool` (optional, default: `False`) - ***whether the character can be copied. In other words, whether its definition is visible.***
-
-
-- visibility: `str` (optional, default: `"private"`) - ***character visibility** (`public`, `unlisted` or `private`).*   
-
-
-- avatar_rel_path: `str` (optional) - ***avatar filename on c.ai server.*** 
-
-
-- default_voice_id: `str` (optional) - ***id of the voice that will be the default character voice.***
-
-
-**Returns** [Character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md#Character-class)
+**Returns:** [`Character`](../types/character.md#character-class)
 
 ---
- 
 
+## Navigation
 
-
-## 📖:
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md)
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md)
-- API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md) <- `(You're here.)`
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md)
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md)
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md)
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)
+- [Welcome](../../welcome.md)
+- [Getting started](../../getting_started.md)
+- [Methods](../methods.md)
+  - [Account](account.md)
+  - **Character** ← you're here
+  - [Chat](chat.md)
+  - [User](user.md)
+  - [Utils](utils.md)
+- [Types](../types.md)

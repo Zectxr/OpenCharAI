@@ -2,94 +2,83 @@
 
 ---
 
-### `HistoryMessage` class
-> representation of message in history (a.k.a. chat v1)
-> 
-> only for the sake of it. Use chat v2 instead.
-
-fields: 
-- **uuid**: `str` - *Message uuid.*
-- **id**: `str` - *Message id.*
-- **text**: `str` - *Message text.*
-- **src**: `dict` - *src. IDK*
-- **tgt**: `dict` - *tgt. IDK*
-- **is_alternative**: `bool` - *Whether the message is alternative.*
-- **image_relative_path**: = `str` - *image relative path.*
-
----
-
 ### `Turn` class
-> representation of message in chat (a.k.a. chat v2)
 
-fields:
-- **chat_id**: `str` - *Chat id.*
-- **turn_id**: `str`- *Turn id.*
+Represents a single message in a chat v2 session.
 
-- **create_time**: (optional) `datetime` - *Turn creation time.*
-- **last_update_time**: (optional) `datetime` = *Turn last update time.*
+| Field | Type | Description |
+|-------|------|-------------|
+| `chat_id` | `str` | Chat ID |
+| `turn_id` | `str` | Turn (message) ID |
+| `create_time` | `Optional[datetime]` | Creation timestamp |
+| `last_update_time` | `Optional[datetime]` | Last update timestamp |
+| `state` | `str` | Turn state |
+| `author_id` | `str` | Author's account ID |
+| `author_name` | `str` | Author's display name |
+| `author_is_human` | `bool` | Whether the author is human |
+| `candidates` | `Dict[str, TurnCandidate]` | All candidates (keyed by candidate ID) |
+| `primary_candidate_id` | `Optional[str]` | Currently selected candidate ID |
 
-- **state**: `str` - *Turn state.*
+**Methods:**
 
-- **author_id**: `str` - *Turn author id.*
-- **author_name**: `str` - *Turn author name.*
-- **author_is_human**: `bool` - *Whether the turn author is human.*
+#### `get_candidates()`
 
-- **candidates**: `{str: TurnCandidate}` - *Dict with all the turn candidates. Where: key is candidate id and value is `TurnCandidate` object.*
+```python
+def get_candidates() -> List[TurnCandidate]
+```
 
-- **primary_candidate_id**: (optional) `str` - *Primary candidate id.*
+Returns all candidates as a list.
 
-\
-**methods**:\
-\
-`get_candidates`
->```Python
->def get_candidates() -> [TurnCandidate]
->```
->
-> **Description**:\
-> *returns list with all the turn candidates.*
-> 
-> 
-> **returns**: `List[TurnCandidate]`
+#### `get_primary_candidate()`
 
-\
-`get_primary_candidate`
->```Python
->def get_primary_candidate() -> Union[TurnCandidate, None]
->```
->
-> **Description**:\
-> *returns primary turn candidate.*
-> 
-> **returns**: `TurnCandidate` or `None`
+```python
+def get_primary_candidate() -> Optional[TurnCandidate]
+```
+
+Returns the currently selected candidate, or `None`.
 
 ---
 
 ### `TurnCandidate` class
-> representation of turn (message) content. 
 
-fields:
-- **candidate_id**: `str` - *Candidate id.*
-- **text**: `str` - *Candidate text.*
-- **fis_final**: `bool` - *Whether the candidate is final, i.e. completely generated.*
-- **is_filtered**: `bool` - *Whether the candidate is filtered, i.e. safety truncated.*
-- **create_time**: (optional) `datetime` - *Candidate creation time.*  
+Represents one version of a message's content (swipes create new candidates).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `candidate_id` | `str` | Candidate ID |
+| `text` | `str` | Message text content |
+| `is_final` | `bool` | Whether generation is complete |
+| `is_filtered` | `bool` | Whether the content was filtered |
+| `create_time` | `Optional[datetime]` | Creation timestamp |
 
 ---
 
-## 📖:
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md)
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md)
-- API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md)
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md)
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md) <- `(You're here.)`
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)
+### `HistoryMessage` class
+
+Represents a message in a chat v1 history session.
+
+> ⚠️ Legacy format. Use `Turn` for new development.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uuid` | `str` | Message UUID |
+| `id` | `str` | Message ID |
+| `text` | `str` | Message text |
+| `src` | `Dict` | Source data |
+| `tgt` | `Dict` | Target data |
+| `is_alternative` | `bool` | Whether this is an alternative |
+| `image_relative_path` | `str` | Image path if applicable |
+
+---
+
+## Navigation
+
+- [Welcome](../../welcome.md)
+- [Getting started](../../getting_started.md)
+- [Methods](../../methods.md)
+- [Types](../types.md)
+  - [User](user.md)
+  - [Character](character.md)
+  - [Chat](chat.md)
+  - **Message** ← you're here
+  - [Media](media.md)

@@ -1,263 +1,212 @@
-## Getting started
+# Getting started
 
-First, you need to install the library:
+## Installation
 
 ```bash
-pip install PyCharacterAI
+pip install OpenCharAI
 ```
 
-\
-Import the `Client` class from the library and create a new instance of it:
+---
 
-```Python
-from PyCharacterAI import Client
-```
+## Client setup
 
-```Python
+```python
+from OpenCharAI import Client
+
 client = Client()
 ```
 
-Then you need to authenticate `client` using `token`:
+Authenticate with your token:
 
-```Python
+```python
 await client.authenticate("TOKEN")
 ```
 
-> if you want to be able to upload your avatar you also need to specify `web_next_auth` token as an additional argument (only this way for now, this may change in the future):
->
-> ```Python
-> await client.authenticate("TOKEN", web_next_auth="WEB_NEXT_AUTH")
-> ```
+If you need avatar upload support, also pass your `web_next_auth` cookie:
 
-\
-Or you can just call `get_client()` method:
+```python
+await client.authenticate("TOKEN", web_next_auth="WEB_NEXT_AUTH")
+```
 
-```Python
-from PyCharacterAI import get_client
+Or use the convenience helper:
+
+```python
+from OpenCharAI import get_client
 
 client = await get_client(token="TOKEN", web_next_auth="WEB_NEXT_AUTH")
 ```
 
-After authentication, we can use all available library methods.
+---
+
+## Getting your tokens
+
+> [!WARNING]
+> Never share your tokens. Anyone with them gains full access to your account.
+
+This library uses two tokens:
+- **`token`** — required for most API methods
+- **`web_next_auth`** — only needed for `upload_avatar()`
+
+### Main token
+
+1. Open [Character AI](https://character.ai) in your browser
+2. Open developer tools (`F12` / `Ctrl+Shift+I` / `Cmd+J`)
+3. Go to the **Network** tab
+4. Interact with the site (visit your profile, send a message, etc.)
+5. Find a request header named `Authorization` and copy the value after `Token`
+
+![token location](../assets/token.png)
+
+### `web_next_auth` token
+
+1. Open [Character AI](https://character.ai) in your browser
+2. Open developer tools (`F12` / `Ctrl+Shift+I` / `Cmd+J`)
+3. Go to **Storage → Cookies**
+4. Find the `web-next-auth` key and copy its value
+
+![web_next_auth location](../assets/web_next_auth.png)
 
 ---
 
-## About tokens and how to get them
->
-> ⚠️ WARNING, DO NOT SHARE THESE TOKENS WITH ANYONE! Anyone with your tokens has full access to your account!
+## Core concepts
 
-This library uses two types of tokens: a common `token` and `web_next_auth`. The first one is required for almost all methods here and the second one only and only for `upload_avatar()` method (may change in the future).
+### Turns and candidates
 
-### Instructions for getting a `token`
+A **Turn** represents a single message in a chat. Each turn contains one or more **Candidates** — alternative versions of that message (like when you swipe on the website to see a different reply).
 
-1. Open the Character.AI website in your browser
-2. Open the `developer tools` (`F12`, `Ctrl+Shift+I`, or `Cmd+J`)
-3. Go to the `Nerwork` tab
-4. Interact with website in some way, for example, go to your profile and look for `Authorization` in the request header
-5. Copy the value after `Token`
+The **primary candidate** is the currently selected version. When you send a message, you reply to the primary candidate. When you generate alternatives with `another_response()`, each new alternative becomes a candidate.
 
-> For example, token in `https://plus.character.ai/chat/user/public/following/` request headers:
-> ![img](https://github.com/Xtr4F/PyCharacterAI/blob/main/assets/token.png)
+### Chat v1 vs Chat v2
 
-### Instructions for getting a `web_next_auth` token
-
-1. Open the Character.AI website in your browser
-2. Open the `developer tools` (`F12`, `Ctrl+Shift+I`, or `Cmd+J`)
-3. Go to the `Storage` section and click on `Cookies`
-4. Look for the `web-next-auth` key
-5. Copy its value
-
-> ![img](https://github.com/Xtr4F/PyCharacterAI/blob/main/assets/web_next_auth.png)
-
----
-
-## Some important concepts
-
-> Further, in the documentation you can find  certain concepts, some of them I want to explain below. Some concepts related to character creation and user personas can be found in the official [character book](https://book.character.ai/character-book/).
-
-### turn and candidate
-
-**Turn** *is a message in chat. It contains one or more `candidates` that represent the content of this message. Just keep in mind that `turn` == `message`.*
-
-**Candidate** (or **TurnCandidate**) *is the "content" of the message (`turn`). A message can have several `candidates` (for example, when you swipe the character's answer on the c.ai website, you create new `candidate` for the character's message).*
-
-**Primary candidate** - *currently selected `candidate`. When you send a new message to the chat, you reply to this (primary) `message candidate`. When a new alternative response is generated, `primary candidate` automatically updates to the newly generated `candidate`. You can also manually set a specific `turn candidate` as a primary if you want to reply to a particular `message candidate`. (Refer to the documentation for more details.)*
-
-\
-...to be completed
+The library supports two chat formats. **Chat v2** is the current standard and should be used for all new development. Chat v1 (`ChatHistory`, `HistoryMessage`) exists only for backward compatibility.
 
 ---
 
 ## Examples
->
-> Here are just some examples of the library's features. If you want to know about all `methods` and `types` with explanations, go to [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md) and [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md) documentation sections.
->
-### Simple chatting example
 
-```Python
+### Basic chat
+
+```python
 import asyncio
-
-from PyCharacterAI import get_client
-from PyCharacterAI.exceptions import SessionClosedError
+from OpenCharAI import get_client
+from OpenCharAI.exceptions import SessionClosedError
 
 token = "TOKEN"
 character_id = "ID"
 
-
 async def main():
     client = await get_client(token=token)
-
     me = await client.account.fetch_me()
     print(f"Authenticated as @{me.username}")
 
-    chat, greeting_message = await client.chat.create_chat(character_id)
-
-    print(f"{greeting_message.author_name}: {greeting_message.get_primary_candidate().text}")
+    chat, greeting = await client.chat.create_chat(character_id)
+    print(f"{greeting.author_name}: {greeting.get_primary_candidate().text}")
 
     try:
         while True:
-            # NOTE: input() is blocking function!
-            message = input(f"[{me.name}]: ")
-
-            answer = await client.chat.send_message(character_id, chat.chat_id, message)
+            msg = input(f"[{me.name}]: ")
+            answer = await client.chat.send_message(character_id, chat.chat_id, msg)
             print(f"[{answer.author_name}]: {answer.get_primary_candidate().text}")
-
     except SessionClosedError:
-        print("session closed. Bye!")
-
+        print("Session closed.")
     finally:
-        # Don't forget to explicitly close the session
         await client.close_session()
 
 asyncio.run(main())
 ```
 
----
+### Streaming
 
-A more advanced example. You can use so-called streaming to receive a message in parts, as is done on a website, instead of waiting for it to be completely generated:
+```python
+answer = await client.chat.send_message(character_id, chat.chat_id, msg, streaming=True)
 
-```Python
-import asyncio
-
-from PyCharacterAI import get_client
-from PyCharacterAI.exceptions import SessionClosedError
-
-token = "TOKEN"
-character_id = "ID"
-
-
-async def main():
-    client = await get_client(token=token)
-
-    me = await client.account.fetch_me()
-    print(f'Authenticated as @{me.username}')
-
-    chat, greeting_message = await client.chat.create_chat(character_id)
-
-    print(f"[{greeting_message.author_name}]: {greeting_message.get_primary_candidate().text}")
-
-    try:
-        while True:
-            # NOTE: input() is blocking function!
-            message = input(f"[{me.name}]: ")
-
-            answer = await client.chat.send_message(character_id, chat.chat_id, message, streaming=True)
-
-            printed_length = 0
-            async for message in answer:
-                if printed_length == 0:
-                    print(f"[{message.author_name}]: ", end="")
-
-                text = message.get_primary_candidate().text
-                print(text[printed_length:], end="")
-
-                printed_length = len(text)
-            print("\n")
-
-    except SessionClosedError:
-        print("session closed. Bye!")
-
-    finally:
-        # Don't forget to explicitly close the session
-        await client.close_session()
-
-asyncio.run(main())
+printed = 0
+async for chunk in answer:
+    if printed == 0:
+        print(f"[{chunk.author_name}]: ", end="")
+    text = chunk.get_primary_candidate().text
+    print(text[printed:], end="")
+    printed = len(text)
 ```
 
----
+### Model types and output styles
 
-### Working with images
+```python
+# Create a chat with the latest model:
+chat, greeting = await client.chat.create_chat(
+    character_id,
+    model_type="MODEL_TYPE_DEEP_SYNTH_LITE"
+)
 
-```Python
-# We can generate images by a prompt
-# (It will return list of urls)
-images = await client.utils.generate_image("prompt")
+# Create a chat with a specific output style:
+chat, greeting = await client.chat.create_chat(
+    character_id,
+    output_style="creative"  # creative | balanced | precise | default
+)
+
+# Inspect the chat's model:
+print(chat.preferred_model_type)
+print(chat.model_preference_version)
+
+# Set global defaults:
+await client.account.set_model_preference("MODEL_TYPE_DEEP_SYNTH_LITE")
+await client.account.set_output_style("creative")
+
+# Read current settings:
+pref = await client.account.fetch_model_preference()
+style = await client.account.fetch_output_style()
 ```
 
-```Python
-# We can upload an image to use it as an 
-# avatar for character/persona/profile
+### Images
 
-# NOTE: This method requires the specified web_next_auth token
-avatar_file = "path to file or url"
-avatar = await client.utils.upload_avatar(avatar_file)
+```python
+# Generate images from text:
+images = await client.utils.generate_image("a cyberpunk city at night")
+
+# Upload an avatar (requires web_next_auth):
+avatar = await client.utils.upload_avatar("path/or/url/to/image.jpg")
 ```
 
----
+### Voices
 
-### Working with voices
+```python
+# Search voices:
+voices = await client.utils.search_voices("friendly")
 
-```Python
-# We can search for voices
-voices = await client.utils.search_voices("name")
-```
+# Upload a voice clip:
+voice = await client.utils.upload_voice("path/or/url/to/audio.mp3", "My Voice")
 
-```Python
-# We can upload the audio as a voice
-voice_file = "path to file or url"
-voice = await client.utils.upload_voice(voice_file, "voice name")
-```
-
-```Python
-# We can set and unset a voice for character  
+# Assign a voice to a character:
 await client.account.set_voice("character_id", "voice_id")
 await client.account.unset_voice("character_id")
-```
 
-```Python
-# And we can use voice to generate speech from the character's messages
+# Generate speech from a chat message:
 speech = await client.utils.generate_speech("chat_id", "turn_id", "candidate_id", "voice_id")
+with open("voice.mp3", "wb") as f:
+    f.write(speech)
 
-# It will return bytes, so we can use it for example like this:
-filepath = "voice.mp3"
-
-with open(filepath, 'wb') as f:
-  f.write(speech)
-```
-
-```Python
-# or we can get just the url.
-speech_url = await client.utils.generate_speech("chat_id", "turn_id", "candidate_id", 
-                                            "voice_id", return_url=True)
-
+# Or get just the URL:
+url = await client.utils.generate_speech(
+    "chat_id", "turn_id", "candidate_id", "voice_id", return_url=True
+)
 ```
 
 ---
 
-## 📖
+## Navigation
 
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md)
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md) <- `(You're here.)`
+- [Welcome](welcome.md)
+- **Getting started** ← you're here
 - API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md)
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md)
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md)
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)
+  - [Methods](api_reference/methods.md)
+    - [Account](api_reference/methods/account.md)
+    - [Character](api_reference/methods/character.md)
+    - [Chat](api_reference/methods/chat.md)
+    - [User](api_reference/methods/user.md)
+    - [Utils](api_reference/methods/utils.md)
+  - [Types](api_reference/types.md)
+    - [Account / User](api_reference/types/user.md)
+    - [Character](api_reference/types/character.md)
+    - [Chat](api_reference/types/chat.md)
+    - [Message](api_reference/types/message.md)
+    - [Media](api_reference/types/media.md)

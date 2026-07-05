@@ -1,26 +1,42 @@
-![Banner](https://characterai.io/static/social-share.png)
+# OpenCharAI
 
-# Welcome to the PyCharacterAI documentation !
->PyCharacterAI - Asynchronous Python library, which is an unofficial api wrapper for Character AI.
+An asynchronous Python wrapper for the [Character AI](https://character.ai/) API.  
+Built with [curl-cffi](https://github.com/yifeikong/curl_cffi).
 
-## 📖:
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md) <- `(You're here.)`
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md)
+---
+
+## Navigation
+
+- **Welcome** ← you're here
+- [Getting started](getting_started.md)
 - API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md)
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md)
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md)
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)      
+  - [Methods](api_reference/methods.md)
+    - [Account](api_reference/methods/account.md)
+    - [Character](api_reference/methods/character.md)
+    - [Chat](api_reference/methods/chat.md)
+    - [User](api_reference/methods/user.md)
+    - [Utils](api_reference/methods/utils.md)
+  - [Types](api_reference/types.md)
+    - [Account / User](api_reference/types/user.md)
+    - [Character](api_reference/types/character.md)
+    - [Chat](api_reference/types/chat.md)
+    - [Message](api_reference/types/message.md)
+    - [Media](api_reference/types/media.md)
 
+---
 
-## Contact with me
-If you have any questions, problems, suggestions, please contact me:
-[![Tag](https://img.shields.io/badge/telegram-dm-black?style=flat&logo=Telegram)](https://t.me/XtraF)
+## Quick start
+
+```bash
+pip install OpenCharAI
+```
+
+```python
+from OpenCharAI import get_client
+
+client = await get_client(token="YOUR_TOKEN")
+me = await client.account.fetch_me()
+print(f"Logged in as @{me.username}")
+```
+
+See the [getting started guide](getting_started.md) for detailed setup instructions.

@@ -3,246 +3,200 @@
 ---
 
 ### `ping`
-```Python
-async def ping() -> bool:
+
+```python
+async def ping() -> bool
 ```
 
-**Description**:\
-*sends a ping request.*
+Checks API connectivity.
 
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `fetch_voice`
-```Python
-async def fetch_voice(voice_id: str) -> Voice:
+
+```python
+async def fetch_voice(voice_id: str) -> Voice
 ```
 
-**Description**:\
-*fetches a voice by given voice id.*
-
-**Params**:
-- voice_id: `str` - *id of the voice.*
-
-**Returns**  [Voice](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md#Voice-class)
+**Returns:** [`Voice`](../types/media.md#voice-class)
 
 ---
 
-
 ### `search_voices`
-```Python
-async def search_voices(voice_name: str) -> List[Voice]:
+
+```python
+async def search_voices(voice_name: str) -> List[Voice]
 ```
 
-**Description**:\
-*searches for voices by given name.*
-
-
-**Params**:
-- voice_name: `str` - *name of the voice.*
-
-
-**Example**:
-```Python
-voice_name = "girl"
-voices = await client.utils.search_voices(voice_name)
-
-print(f"search results for {voice_name}: ")
-
-for voice in voices:
-    print(f"{voice.name} [{voice.voice_id}]")
+```python
+voices = await client.utils.search_voices("soft")
+for v in voices:
+    print(f"{v.name} — {v.voice_id}")
 ```
 
-**Returns** `List[`[Voice](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md#Voice-class)`]`
+**Returns:** `List[Voice]`
 
 ---
 
 ### `generate_image`
-```Python
-async def generate_image(prompt: str) -> List[str]:
+
+```python
+async def generate_image(prompt: str, **kwargs) -> List[str]
 ```
 
-**Description**:\
-*generates the images for given prompt.*
+Generates images from a text prompt. Returns a list of image URLs.
 
-*Returns a list of links to generated images.*
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `prompt` | `str` | — | Image description |
+| `num_candidates` (kwarg) | `int` | `4` | Number of images to generate |
 
-**Params**:
-- prompt: `str` - *your prompt.*
-
-**Example**:
-```Python
-prompt = "moon and sea"
-
-images = await client.utils.generate_image(prompt)
-
-print(f"generated images by the prompt \"{prompt}\": ")
-
-for image_url in images:
-    print(image_url)
+```python
+images = await client.utils.generate_image("a sunset over mountains", num_candidates=4)
+for url in images:
+    print(url)
 ```
 
-
-**Returns** `List[str]`
+**Returns:** `List[str]`
 
 ---
 
 ### `upload_avatar`
-```Python
-async def upload_avatar(image: str, check_image: bool = True) -> Avatar:
+
+```python
+async def upload_avatar(image: str, check_image: bool = True) -> Avatar
 ```
 
-**Description**:\
-*uploads your image to use it as an avatar for character/persona/profile.*
+Uploads an image to use as an avatar.
 
-***NOTE: This method requires the specified web_next_auth token***
+> **Note:** Requires the `web_next_auth` token to be set during authentication.
 
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `image` | `str` | — | File path or URL |
+| `check_image` | `bool` | `True` | Verify the uploaded image is accessible |
 
-**Params**:
-- image: `str` - *filepath or url.*
-- check_image: (optional, default: `True`) `bool` - *whether to check the validity of the uploaded avatar (makes one more additional request).*
-
-**Example**:
-```Python
-avatar_file = "path to file or url"
-
-avatar = await client.utils.upload_avatar(avatar_file)
-
-print(f"avatar uploaded successfully. Url: {avatar.get_url()}\n")
-
-# You can use this as an avatar_rel_path
-filename = avatar.get_file_name()
-print(f"avatar rel path: {filename}")
+```python
+avatar = await client.utils.upload_avatar("path/to/image.jpg")
+print(avatar.get_url())
 ```
 
-
-**Returns**  [Avatar](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md#Avatar-class)
-
+**Returns:** [`Avatar`](../types/media.md#avatar-class)
 
 ---
 
 ### `upload_voice`
-```Python
-async def upload_voice(voice: str, name: str, description: str = "", visibility: str = "private") -> Voice:
+
+```python
+async def upload_voice(
+    voice: Union[str, bytes],
+    name: str,
+    description: str = "",
+    visibility: str = "private",
+) -> Voice
 ```
 
-**Description**:\
-*uploads your audio as a voice for characters.*
+Uploads audio as a character voice.
 
-**Params**:
-- voice: `str` - ***filepath or url.***
-- name: `str` - ***voice name** (must be at least 3 characters and no more than 20).*
-- description: (optional) `str` - ***voice description** (must be no more than 120 characters).*
-- visibility: (optional, default: `"private"`) `str` - ***voice visibility** (`public` or `private`).* 
+| Param | Type | Constraints |
+|-------|------|-------------|
+| `voice` | `str` or `bytes` | File path, URL, or raw bytes |
+| `name` | `str` | 3–20 characters |
+| `description` | `str` | ≤120 characters |
+| `visibility` | `str` | `"public"` or `"private"` |
 
-**Example**:
-```Python
-voice_file = "path to file or url"
-voice = await client.utils.upload_voice(voice_file, "voice name", "voice description")
-
-print(f"voice uploaded successfully.\n"
-      f"voice_id: {voice.voice_id}\n"
-      f"preview: {voice.preview_audio_url}")
+```python
+voice = await client.utils.upload_voice("path/to/audio.mp3", "My Voice")
+print(f"Uploaded: {voice.voice_id}")
 ```
 
-**Returns**  [Voice](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md#Voice-class)
-
+**Returns:** [`Voice`](../types/media.md#voice-class)
 
 ---
 
 ### `edit_voice`
-```Python
-async def edit_voice(voice: Union[str, Voice], name: str = None, description: str = None, visibility: str = None) -> Voice:
+
+```python
+async def edit_voice(
+    voice: Union[str, Voice],
+    name: Optional[str] = None,
+    description: Optional[str] = None,
+    visibility: str = "private",
+) -> Voice
 ```
 
-**Description**:\
-*edits your voice.*
+| Param | Type | Description |
+|-------|------|-------------|
+| `voice` | `str` or `Voice` | Voice ID or Voice object |
+| `name` | `Optional[str]` | New name (3–20 chars) |
+| `description` | `Optional[str]` | New description (≤120 chars) |
+| `visibility` | `str` | `"public"` or `"private"` |
 
-**Params**:
-- voice: `str` or `Voice` - ***id of the voice you're trying to edit or Voice object.***
-- name: (optional) `str` - ***new voice name** (must be at least 3 characters and no more than 20).*
-- description: (optional) `str` - ***new voice description** (must be no more than 120 characters).*
-- visibility: (optional) `str` - ***new voice visibility** (`public` or `private`).* 
-
-
-**Returns**  [Voice](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md#Voice-class)
-
+**Returns:** [`Voice`](../types/media.md#voice-class)
 
 ---
 
 ### `delete_voice`
-```Python
-async def delete_voice(voice_id: str) -> bool:
+
+```python
+async def delete_voice(voice_id: str) -> bool
 ```
 
-**Description**:\
-*deletes your voice.*
-
-**Params**:
-- voice_id: `str` - ***id of the voice you're trying to delete.***
-
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `generate_speech`
-```Python
-async def generate_speech(chat_id: str, turn_id: str, candidate_id: str, voice_id: str, 
-                          **kwargs) -> Union[bytes, str]:
+
+```python
+async def generate_speech(
+    chat_id: str,
+    turn_id: str,
+    candidate_id: str,
+    voice_id: str,
+    **kwargs,
+) -> Union[bytes, str]
 ```
 
-**Description**:\
-*generate speech from the character's message candidate.*
+Generates speech audio from a character's message.
 
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message (turn).*
-- candidate_id: `str` - *id of the message candidate.*
-- voice_id: `str` - *id of the voice.*
+| Param | Type | Description |
+|-------|------|-------------|
+| `chat_id` | `str` | ID of the chat |
+| `turn_id` | `str` | ID of the turn (message) |
+| `candidate_id` | `str` | ID of the candidate |
+| `voice_id` | `str` | ID of the voice |
 
-**Additional params (kwargs)**:
-- return_url: (optional, default: `False`) - *If you pass `True`, the method will return the url to the generated speech instead of making an additional request to get the `bytes`.* 
+**Kwargs:**
 
+| Kwarg | Type | Default | Description |
+|-------|------|---------|-------------|
+| `return_url` | `bool` | `False` | Return the audio URL instead of raw bytes |
 
-**Example**:
-```Python
-speech = await client.utils.generate_speech("chat_id", "turn_id", "candidate_id", 
-                                            "voice_id")
+```python
+# Get raw audio bytes
+audio = await client.utils.generate_speech(chat_id, turn_id, candidate_id, voice_id)
+with open("output.mp3", "wb") as f:
+    f.write(audio)
 
-filepath = "voice.mp3"
-
-with open(filepath, 'wb') as f:
-     f.write(speech)
-```
-```Python
-# or you can get just the url.
-speech_url = await client.utils.generate_speech("chat_id", "turn_id", "candidate_id", 
-                                            "voice_id", return_url=True)
-
+# Get the URL instead
+url = await client.utils.generate_speech(chat_id, turn_id, candidate_id, voice_id, return_url=True)
 ```
 
-**Returns**  `bytes` or `str`
+**Returns:** `bytes` or `str`
 
 ---
-  
-       
-    
 
-## 📖:
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md)
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md)
-- API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md)
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md) <- `(You're here.)`
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md)
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)
+## Navigation
+
+- [Welcome](../../welcome.md)
+- [Getting started](../../getting_started.md)
+- [Methods](../methods.md)
+  - [Account](account.md)
+  - [Character](character.md)
+  - [Chat](chat.md)
+  - [User](user.md)
+  - **Utils** ← you're here
+- [Types](../types.md)

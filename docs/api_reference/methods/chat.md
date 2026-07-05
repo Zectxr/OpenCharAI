@@ -3,547 +3,354 @@
 ---
 
 ### `fetch_histories`
-```Python
-async def fetch_histories(character_id: str, amount: int = 50) -> List[ChatHistory]:
+
+```python
+async def fetch_histories(character_id: str, amount: int = 50) -> List[ChatHistory]
 ```
 
-**Description**:\
-*fetches your histories (a.k.a. chat v1) with character.*
+Fetches your chat v1 histories with a character.
 
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `character_id` | `str` | — | ID of the character |
+| `amount` | `int` | `50` | Number of histories to fetch |
 
-**Params**:
-- character_id: `str` - *id of the character.*
-- amount: (optional, default: `50`) `int` - *amount of histories to fetch.*
-
-
-**Returns** `List[`[ChatHistory](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#ChatHistory-class)`]`
+**Returns:** `List[ChatHistory]`
 
 ---
 
 ### `fetch_chats`
-```Python
-async def fetch_chats(character_id: str) -> List[Chat]:
+
+```python
+async def fetch_chats(character_id: str) -> List[Chat]
 ```
 
-**Description**:\
-*fetches your chats with character.*
+Fetches your chat v2 sessions with a character.
 
-
-**Params**:
-- character_id: `str` - *id of the character.*
-
-
-**Returns** `List[`[Chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Chat-class)`]`
+**Returns:** `List[Chat]`
 
 ---
 
-
 ### `fetch_chat`
-```Python
+
+```python
 async def fetch_chat(chat_id: str) -> Chat
 ```
 
-**Description**:\
-*fetches information about your chat with character.*
-
-
-**Params**:
-- chat_id: `str` - *id of the chat you're trying to fetch.*
-
-
-**Returns** [Chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Chat-class)
+**Returns:** [`Chat`](../types/chat.md#chat-class)
 
 ---
 
-
-
-
 ### `fetch_recent_chats`
-```Python
-async def fetch_recent_chats() -> List[Chat]:
+
+```python
+async def fetch_recent_chats() -> List[Chat]
 ```
 
-**Description**:\
-*fetches your recent chats with characters.*
-
-**Example**:
-```Python
+```python
 chats = await client.chat.fetch_recent_chats()
-
-print("I have recent chats with:")
-
 for chat in chats:
-    print(f"{chat.character_name} - [{chat.character_id}]")
+    print(f"{chat.character_name} — {chat.chat_id}")
 ```
 
-**Returns** `List[`[Chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Chat-class)`]`
+**Returns:** `List[Chat]`
 
 ---
 
 ### `fetch_messages`
-```Python
-async def fetch_messages(chat_id, pinned_only: bool = False,
-                         next_token: str = None) -> Tuple[List[Turn], Optional[str]]:
+
+```python
+async def fetch_messages(
+    chat_id: str,
+    pinned_only: bool = False,
+    next_token: Optional[str] = None,
+) -> Tuple[List[Turn], Optional[str]]
 ```
 
-**Description**:\
-*fetches messages in the chat with character.*
+Fetches messages in a chat. Returns a tuple of `(messages, next_token)`. If `next_token` is not `None`, more messages are available.
 
-*Returns a tuple where the first element is list of messages and the second one is `next_token`. If `next_token` is not `None` it means that there are more messages, and they can be fetched by calling this method again, passing `next_token` as an argument.*
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `chat_id` | `str` | — | ID of the chat |
+| `pinned_only` | `bool` | `False` | Only fetch pinned messages |
+| `next_token` | `Optional[str]` | `None` | Pagination token |
 
+```python
+messages, next_token = await client.chat.fetch_messages(chat_id)
+for msg in messages:
+    print(f"[{msg.author_name}]: {msg.get_primary_candidate().text}")
 
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- pinned_only: (optional, default: `False`) `bool` - *whether to fetch only the messages you have been pinned.*  
-- next_token: (optional, default: `None`) `str` - *next token.*
-
-**Example**:
-```Python
-next_token = None
-
-while True:
-    messages, next_token = await client.chat.fetch_messages(chatc, next_token=next_token)
-
-    if not messages:
-        break
-
-    for message in messages:
-        time = (f"{message.create_time.hour}:"
-                f"{message.create_time.minute}:"
-                f"{message.create_time.second}")
-
-        print(f"({time}) [{message.author_name}]: "
-                f"{message.get_primary_candidate().text}\n")
-
-    if not next_token:
-        break
+while next_token:
+    messages, next_token = await client.chat.fetch_messages(chat_id, next_token=next_token)
+    for msg in messages:
+        print(f"[{msg.author_name}]: {msg.get_primary_candidate().text}")
 ```
 
-**Returns** `Tuple[List[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`], Optional[str]]`
+**Returns:** `Tuple[List[Turn], Optional[str]]`
 
 ---
 
 ### `fetch_all_messages`
-```Python
-async def fetch_all_messages(chat_id, pinned_only: bool = False) -> List[Turn]:
+
+```python
+async def fetch_all_messages(chat_id: str, pinned_only: bool = False) -> List[Turn]
 ```
 
-**Description**:\
-*fetches all the messages in the chat with character.*
+Fetches **all** messages in a chat by automatically paginating.
 
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- pinned_only: (optional, default: `False`) `bool` - *whether to fetch only the messages you have been pinned.*
-
-    
-**Returns** `List[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`]`
+**Returns:** `List[Turn]`
 
 ---
 
 ### `fetch_pinned_messages`
-```Python
-async def fetch_pinned_messages(chat_id, next_token: str = None) -> [List[Turn], Optional[str]]:
+
+```python
+async def fetch_pinned_messages(
+    chat_id: str,
+    next_token: Optional[str] = None,
+) -> Tuple[List[Turn], Optional[str]]
 ```
 
-**Description**:\
-*fetches pinned messages in the chat with character.*
-
-*Returns a tuple where the first element is list of pinned messages and the second one is `next_token`. If `next_token` is not `None` it means that there are more messages, and they can be fetched by calling this method again, passing `next_token` as an argument.*
-
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- next_token: (optional, default: `None`) `str` - *next token.*
-
-**Returns** `Tuple[List[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`], Optional[str]]`
+**Returns:** `Tuple[List[Turn], Optional[str]]`
 
 ---
 
 ### `fetch_all_pinned_messages`
-```Python
-async def fetch_all_pinned_messages(chat_id: str) -> List[Turn]:
+
+```python
+async def fetch_all_pinned_messages(chat_id: str) -> List[Turn]
 ```
 
-**Description**:\
-*fetches all the pinned messages in the chat with character.*
-
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-
-    
-**Returns** `List[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`]`
+**Returns:** `List[Turn]`
 
 ---
 
 ### `fetch_following_messages`
-```Python
-async def fetch_following_messages(chat_id: str, turn_id: str, pinned_only: bool = False) -> List[Turn]:
+
+```python
+async def fetch_following_messages(
+    chat_id: str,
+    turn_id: str,
+    pinned_only: bool = False,
+) -> List[Turn]
 ```
 
-**Description**:\
-*fetches all the messages following a given message in the chat with character.*
+Fetches all messages after a specific turn in a chat.
 
+| Param | Type | Description |
+|-------|------|-------------|
+| `chat_id` | `str` | ID of the chat |
+| `turn_id` | `str` | Reference turn ID |
+| `pinned_only` | `bool` | Only fetch pinned messages |
 
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message relative to which you're trying to fetch the following ones.*
-- pinned_only: (optional, default: `False`) `bool` - *whether to fetch only the messages you have been pinned.*
-
-    
-**Returns** `List[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`]`
+**Returns:** `List[Turn]`
 
 ---
 
 ### `update_chat_name`
-```Python
+
+```python
 async def update_chat_name(chat_id: str, name: str) -> bool
 ```
 
-**Description**:\
-*updates a name of the chat.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- name: `str` - *the name you're trying to give to the chat.*
-    
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `archive_chat`
-```Python
+
+```python
 async def archive_chat(chat_id: str) -> bool
 ```
 
-**Description**:\
-*archives your chat.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `unarchive_chat`
-```Python
+
+```python
 async def unarchive_chat(chat_id: str) -> bool
 ```
 
-**Description**:\
-*unarchives your chat.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `copy_chat`
-```Python
-async def copy_chat(chat_id: str, end_turn_id: str) -> Union[str, None]
+
+```python
+async def copy_chat(chat_id: str, end_turn_id: str) -> Optional[str]
 ```
 
-**Description**:\
-*copies all the messages in the chat up to the `end_turn` to a new chat.*
+Copies all messages up to `end_turn_id` into a new chat. Returns the new chat's ID.
 
-*Returns id of the new chat.*
-
-**Params**:
-- chat_id: `str` - ***id of the chat.***
-- end_turn_id: `str` - ***id of the message (turn) up to which the chat should be copied** ( if you want to copy the whole chat, pass id of the last message (turn) in the chat).*
-
-**Returns** `str` | `None`
+**Returns:** `Optional[str]`
 
 ---
 
 ### `create_chat`
-```Python
-async def create_chat(character_id: str, greeting: bool = True) 
-  -> Tuple[Chat, Optional[Turn]]:
+
+```python
+async def create_chat(
+    character_id: str,
+    greeting: bool = True,
+    **kwargs,
+) -> Tuple[Chat, Optional[Turn]]
 ```
 
-**Description**:\
-*creates a new chat with the character.*
+Creates a new chat with a character.
 
-*Returns a tuple where the first element is chat and the second one is greeting message. If you pass `greeting` as `False`, greeting message will be `None`.*
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `character_id` | `str` | — | ID of the character |
+| `greeting` | `bool` | `True` | Whether to generate a greeting message |
 
+**Keyword arguments:**
 
-**Params**:
-- character_id: `str` - *id of the character you're trying to create a chat with.*
-- greeting: (optional, default: `True`) `bool` - *whether to generate a greeting message.*
+| Kwarg | Type | Description |
+|-------|------|-------------|
+| `model_type` | `str` | Model to use (e.g. `"MODEL_TYPE_DEEP_SYNTH_LITE"`) |
+| `output_style` | `str` | Chat style (`"creative"`, `"balanced"`, `"precise"`, `"default"`) |
 
-**Example**:
-```Python
-character_id = "ID"
+```python
+# Basic usage
+chat, greeting = await client.chat.create_chat(character_id)
 
-# I do want to have a greeting message.
-chat, greeting_message = await client.chat.create_chat("character_id")
-print(f"The new chat with id {chat.chat_id} created.")
-print(greeting_message.get_primary_candidate().text)
+# With model type and output style
+chat, greeting = await client.chat.create_chat(
+    character_id,
+    model_type="MODEL_TYPE_DEEP_SYNTH_LITE",
+    output_style="creative",
+)
 
-# I do not want to have a greeting message.
-chat, _ = await client.chat.create_chat("character_id", False)
-print(f"The new chat with id {chat.chat_id} created.")
+# Skip the greeting
+chat, _ = await client.chat.create_chat(character_id, greeting=False)
 ```
 
-**Returns** `Tuple[`[Chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Chat-class), `Optional[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)`]]`
+**Returns:** `Tuple[Chat, Optional[Turn]]`
 
 ---
 
-
 ### `update_primary_candidate`
-```Python
-async def update_primary_candidate(chat_id: str, turn_id, candidate_id: str) -> bool:
+
+```python
+async def update_primary_candidate(chat_id: str, turn_id: str, candidate_id: str) -> bool
 ```
 
-**Description**:\
-*updates the primary candidate in turn (message).*
+Sets the primary candidate for a turn (swipes to a specific response).
 
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message.*
-- candidate_id: `str` - *id of the candidate you're trying to set as primary.*
-    
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `send_message`
-```Python
-async def send_message(character_id: str, chat_id: str, text: str,
-                       streaming: bool = False) -> Union[Turn, AsyncGenerator[Turn, Any]]:
+
+```python
+async def send_message(
+    character_id: str,
+    chat_id: str,
+    text: str,
+    streaming: bool = False,
+) -> Union[Turn, AsyncGenerator[Turn, Any]]
 ```
 
-**Description**:\
-*sends a message to the chat with character.*
+Sends a message to the character. When `streaming=True`, returns an async generator that yields partial turn updates as they're generated.
 
-*Returns an answer message, or if you pass `streaming` as `True`, an async generator through which you can iterate to receive an answer message in parts, as is done on a website, instead of waiting for it to be completely generated.*
+```python
+# Without streaming
+answer = await client.chat.send_message(character_id, chat_id, "Hello!")
+print(answer.get_primary_candidate().text)
 
-
-**Params**:
-- character_id: `str` - *id of the character you're trying to send a message to.*
-- chat_id: `str` - *id of the chat with character.*
-- text: `str` - *your message text.*
-- streaming: (optional, default = `False`) `bool`  - *whether to use streaming.*
-
-**Example**:
-```Python
-# without streaming. 
-while True:
-    my_message = input("my message: ")
-
-    answer = await client.chat.send_message("character_id", "chat_id", my_message)
-    print(f"[{answer.author_name}]: {answer.get_primary_candidate().text}")
-```
-```Python    
-# with streaming.
-while True:
-    my_message = input(f"my message: ")
-
-    answer = await client.chat.send_message("character_id", "chat_id", my_message, streaming=True)
-
-    printed_length = 0
-    async for message in answer:
-        if printed_length == 0:
-            print(f"[{message.author_name}]: ", end="")
-
-        text = message.get_primary_candidate().text
-        print(text[printed_length:], end="")
-
-        printed_length = len(text)
-    print("\n")
+# With streaming
+stream = await client.chat.send_message(character_id, chat_id, "Hello!", streaming=True)
+async for chunk in stream:
+    print(chunk.get_primary_candidate().text)
 ```
 
-**Returns** [Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)
- or`AsyncGenerator[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)
-,`Any]]`
-
+**Returns:** [`Turn`](../types/message.md#turn-class) or `AsyncGenerator[Turn]`
 
 ---
 
 ### `another_response`
-```Python
-async def another_response(character_id: str, chat_id: str, turn_id: str,
-                           streaming: bool = False) -> Union[Turn, AsyncGenerator[Turn, Any]]:
+
+```python
+async def another_response(
+    character_id: str,
+    chat_id: str,
+    turn_id: str,
+    streaming: bool = False,
+) -> Union[Turn, AsyncGenerator[Turn, Any]]
 ```
 
-**Description**:\
-*generates another response (turn candidate) from the character.*
+Generates an alternative response for a specific turn (equivalent to swiping on the website).
 
-*Returns an answer message with new turn candidate, or if you pass `streaming` as `True`, an async generator through which you can iterate to receive an answer message in parts, as is done on a website, instead of waiting for it to be completely generated.*
-
-
-**Params**:
-- character_id: `str` - *id of the character.*
-- chat_id: `str` - *id of the chat with character.*
-- turn_id: `str` - *id of the character message you are trying to generate an alternative response (candidate) for.*
-- streaming: (optional, default = `False`) `bool`  - *whether to use streaming.*
-
-**Example**:
-```Python
-# without streaming
-answer = await client.chat.send_message("character_id", 
-                                        "chat_id", 
-                                        "message")
-
-print(f"character response: \n{answer.get_primary_candidate().text}\n")
-
-for counter in range(1, 4):
-    # We're generating 3 alternative responses to our message.
-    alternative_answer = await client.chat.another_response("character_id", 
-                                                            "chat_id", 
-                                                            answer.turn_id)
-
-    print(f"alternative character response #{counter}: \n"
-          f"{alternative_answer.get_primary_candidate().text}\n")
-```
-```Python
-# with streaming
-async def print_and_return_answer(answer):
-    printed_length = 0
-    answer_turn = None
-
-    async for message in answer:
-        text = message.get_primary_candidate().text
-        print(text[printed_length:], end="")
-
-        printed_length = len(text)
-
-        answer_turn = message
-    print("\n")
-
-    return answer_turn
-
-answer = await client.chat.send_message("character_id", 
-                                        "chat_id", 
-                                        "message", 
-                                        streaming=True)
-
-print(f"character response: \n")
-answer = await print_and_return_answer(answer)
-
-for counter in range(1, 4):
-    # We're generating 3 alternative responses to our message.
-    alternative_answer = await client.chat.another_response("character_id", 
-                                                            "chat_id", 
-                                                            answer.turn_id,
-                                                            streaming=True)
-
-    print(f"alternative character response #{counter}: \n")
-    await print_and_return_answer(alternative_answer)
-```
-
-**Returns** [Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)
- or`AsyncGenerator[`[Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)
-,`Any]]`
-
+**Returns:** [`Turn`](../types/message.md#turn-class) or `AsyncGenerator[Turn]`
 
 ---
 
 ### `edit_message`
-```Python
+
+```python
 async def edit_message(chat_id: str, turn_id: str, candidate_id: str, text: str) -> Turn
 ```
 
-**Description**:\
-*edits message candidate text.*
+Edits a candidate's text.
 
-*Returns turn with edited candidate.*
-
-**Params**:
-- chat_id: `str` - *id of the chat with character.*
-- turn_id: `str` - *id of the message.*
-- candidate_id: `str` - *id of the candidate you're trying to edit.*
-- text: `str` - *new candidate text.*
-
-
-**Returns** [Turn](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md#Turn-class)
+**Returns:** [`Turn`](../types/message.md#turn-class)
 
 ---
 
 ### `delete_messages`
-```Python
-async def delete_messages(chat_id: str, turn_ids: [str]) -> bool:
+
+```python
+async def delete_messages(chat_id: str, turn_ids: List[str]) -> bool
 ```
 
-**Description**:\
-*deletes messages in the chat with character.*
+Deletes multiple messages.
 
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_ids: `List[str]` - *ids of the messages you're trying to delete.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
 ### `delete_message`
-```Python
-async def delete_message(chat_id: str, turn_id: str) -> bool:
+
+```python
+async def delete_message(chat_id: str, turn_id: str) -> bool
 ```
 
-**Description**:\
-*deletes a message in the chat with character.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message you're trying to delete.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
-     
 
 ### `pin_message`
-```Python
-async def pin_message(chat_id: str, turn_id: str) -> bool:
+
+```python
+async def pin_message(chat_id: str, turn_id: str) -> bool
 ```
 
-**Description**:\
-*pins a message in the chat with character.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message you're trying to pin.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
-     
+
 ### `unpin_message`
-```Python
-async def unpin_message(chat_id: str, turn_id: str) -> bool:
+
+```python
+async def unpin_message(chat_id: str, turn_id: str) -> bool
 ```
 
-**Description**:\
-*unpins a message in the chat with character.*
-
-**Params**:
-- chat_id: `str` - *id of the chat.*
-- turn_id: `str` - *id of the message you're trying to unpin.*
-
-**Returns** `bool`
+**Returns:** `bool`
 
 ---
 
+## Navigation
 
-## 📖:
-- [Welcome](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/welcome.md)
-- [Getting started](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/getting_started.md)
-- API Reference:
-  - [methods](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods.md):
-    - [account](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/account.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/chat.md) <- `(You're here.)`
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/user.md)
-    - [utils](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/methods/utils.md)
-  - [types](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types.md):
-    - [user](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/user.md)
-    - [character](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/character.md)
-    - [chat](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/chat.md)
-    - [message](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/message.md)
-    - [media](https://github.com/Xtr4F/PyCharacterAI/blob/main/docs/api_reference/types/media.md)
+- [Welcome](../../welcome.md)
+- [Getting started](../../getting_started.md)
+- [Methods](../methods.md)
+  - [Account](account.md)
+  - [Character](character.md)
+  - **Chat** ← you're here
+  - [User](user.md)
+  - [Utils](utils.md)
+- [Types](../types.md)
