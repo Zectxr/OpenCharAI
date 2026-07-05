@@ -244,3 +244,4 @@ url = await client.utils.generate_speech("chat_id", "turn_id", "candidate_id", "
 - [PyCharacterAI](https://github.com/Xtr4F/PyCharacterAI) by XtraF — the original library this fork builds on.
 - [node_characterai](https://github.com/realcoloride/node_characterai) by @realcoloride — backbone of the project in its early days.
 - [CharacterAI](https://github.com/kramcat/CharacterAI) by @kramcat — inspiration for the original.
+# OpenCharAI
