@@ -182,6 +182,8 @@ pref = await client.account.fetch_model_preference()
 style = await client.account.fetch_output_style()
 ```
 
+A full runnable example is at [`docs/examples/simple_example_with_model.py`](examples/simple_example_with_model.py).
+
 ### Images
 
 ```python
@@ -222,6 +224,7 @@ url = await client.utils.generate_speech(
 
 - [Welcome](welcome.md)
 - **Getting started** ← you're here
+- [Models](models.md)
 - API Reference:
   - [Methods](api_reference/methods.md)
     - [Account](api_reference/methods/account.md)
